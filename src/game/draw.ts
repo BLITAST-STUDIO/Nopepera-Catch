@@ -51,19 +51,20 @@ function drawPart(
   ctx: CanvasRenderingContext2D,
   images: Images,
   id: PartId,
+  variant: number,
   x: number,
   y: number,
   headW: number,
   rot: number,
   alpha: number,
 ) {
-  const img = images[id];
+  const set = images.parts[id];
+  const img = set[variant] ?? set[0];
   const { w, h } = partWH(id, headW);
   ctx.save();
   ctx.globalAlpha *= alpha;
   ctx.translate(x, y);
   ctx.rotate(rot);
-  if (id === "eyeL") ctx.scale(-1, 1);
   ctx.drawImage(img, -w / 2, -h / 2, w, h);
   ctx.restore();
 }
@@ -78,6 +79,7 @@ function drawCharacter(
   attached: Attached[],
   ghost: PartId | null,
   ghostAlpha: number,
+  ghostVariant = 0,
 ) {
   const bobY = Math.sin(bobT * 2.2) * 3;
   const feetY = groundY + bobY;
@@ -117,12 +119,12 @@ function drawCharacter(
     ctx.beginPath();
     ctx.ellipse(gx, gy, w * 0.55, h * 0.55, 0, 0, Math.PI * 2);
     ctx.stroke();
-    drawPart(ctx, images, ghost, gx, gy, headW, 0, 0.7);
+    drawPart(ctx, images, ghost, ghostVariant, gx, gy, headW, 0, 0.7);
     ctx.restore();
   }
 
   for (const a of attached) {
-    drawPart(ctx, images, a.id, headX + a.relX, headY + a.relY, headW, a.rot, 1);
+    drawPart(ctx, images, a.id, a.variant, headX + a.relX, headY + a.relY, headW, a.rot, 1);
   }
   ctx.restore();
 
@@ -192,10 +194,21 @@ export function drawFrame(ctx: CanvasRenderingContext2D, s: DrawState) {
     s.attached,
     ghostId && ghostA > 0 ? ghostId : null,
     ghostA,
+    s.falling?.variant ?? 0,
   );
 
   if (s.falling) {
-    drawPart(ctx, s.images, s.falling.id, s.falling.x, s.falling.y, m.headW, s.falling.rot, 1);
+    drawPart(
+      ctx,
+      s.images,
+      s.falling.id,
+      s.falling.variant,
+      s.falling.x,
+      s.falling.y,
+      m.headW,
+      s.falling.rot,
+      1,
+    );
   }
 
   for (const p of s.particles) {

@@ -16,6 +16,7 @@ import {
   SAVE_KEY,
   SPRITE,
   TOTAL_ROUNDS,
+  randomPartSet,
   rankFor,
   type Attached,
   type Burst,
@@ -210,6 +211,7 @@ export function createGame(
     const { minX, maxX } = playBounds();
     falling = {
       id,
+      variant: randomPartSet(),
       x: lerp(minX, maxX, Math.random()),
       y: -48,
       rot: (Math.random() - 0.5) * 0.4,
@@ -296,7 +298,7 @@ export function createGame(
     const dist = Math.hypot(relX - ideal.x, relY - ideal.y);
     const grade = gradeOf(dist, m.headW);
     attached = attached.filter((a) => a.id !== falling!.id);
-    attached.push({ id: falling.id, relX, relY, rot: falling.rot });
+    attached.push({ id: falling.id, variant: falling.variant, relX, relY, rot: falling.rot });
     lastGrade = grade;
     if (grade === "perfect") combo += 1;
     else combo = 0;

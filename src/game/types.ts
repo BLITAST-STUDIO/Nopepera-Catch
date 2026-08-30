@@ -69,12 +69,6 @@ export const PART_SIZE: Record<PartId, { w: number; h: number }> = {
 export const SPRITE_SRC = {
   noppera: "/sprites/noppera.png",
   stage: "/sprites/stage.jpg",
-  browL: "/sprites/brow-l.png",
-  browR: "/sprites/brow-r.png",
-  eyeL: "/sprites/eye-l.png",
-  eyeR: "/sprites/eye-r.png",
-  nose: "/sprites/nose.png?v=4",
-  mouth: "/sprites/mouth.png",
   fx1: "/sprites/fx-1.png",
   fx2: "/sprites/fx-2.png",
   fx3: "/sprites/fx-3.png",
@@ -82,6 +76,22 @@ export const SPRITE_SRC = {
 } as const;
 
 export type SpriteKey = keyof typeof SPRITE_SRC;
+
+/** 3 graphic sets. Index 0 is the original. Spawn picks at random. */
+export const PART_SET_COUNT = 3;
+
+export const PART_SRC: Record<PartId, readonly [string, string, string]> = {
+  browL: ["/sprites/brow-l.png", "/sprites/brow-l-2.png?v=2", "/sprites/brow-l-3.png?v=2"],
+  browR: ["/sprites/brow-r.png", "/sprites/brow-r-2.png?v=2", "/sprites/brow-r-3.png?v=2"],
+  eyeL: ["/sprites/eye-l.png", "/sprites/eye-l-2.png?v=2", "/sprites/eye-l-3.png?v=2"],
+  eyeR: ["/sprites/eye-r.png", "/sprites/eye-r-2.png?v=2", "/sprites/eye-r-3.png?v=2"],
+  nose: ["/sprites/nose.png?v=4", "/sprites/nose-2.png?v=2", "/sprites/nose-3.png?v=2"],
+  mouth: ["/sprites/mouth.png", "/sprites/mouth-2.png?v=2", "/sprites/mouth-3.png?v=2"],
+};
+
+export function randomPartSet() {
+  return Math.floor(Math.random() * PART_SET_COUNT);
+}
 
 /** Measured from the cropped noppera sprite (287×900). */
 export const SPRITE = {
@@ -104,6 +114,7 @@ export function rankFor(score: number): { title: string; line: string } {
 
 export type Attached = {
   id: PartId;
+  variant: number;
   relX: number;
   relY: number;
   rot: number;
@@ -111,6 +122,7 @@ export type Attached = {
 
 export type Falling = {
   id: PartId;
+  variant: number;
   x: number;
   y: number;
   rot: number;
